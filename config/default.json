@@ -1,0 +1,4 @@
+{
+  "databaseName": "mongodb://localhost:27017/NeuralZome",
+  "ai_URL": "http://18.191.241.187:5000/"
+}

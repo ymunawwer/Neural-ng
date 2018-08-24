@@ -1,0 +1,87 @@
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const tableSchema = new Schema({
+  email: {
+    type: String,
+    unique: true,
+    index: true,
+    required: true
+  },
+  name: {
+    type: String,
+    default: ''
+  },
+  total_api_hit_count: {
+    type: Number,
+    default: 0
+  },
+  total_model_count: {
+    type: Number,
+    default: 0
+  },
+  premium: {
+    type: Boolean,
+    default: false
+  },
+  model: [{
+    model_id: {
+      type: String,
+      default: ''
+    },
+    accuracy: {
+      type: String,
+      default: ''
+    },
+    data_types: {
+      type: Schema.Types.Mixed
+    },
+    algo: {
+      type: String,
+      default: ''
+    },
+    model_file_path: {
+      type: String,
+      default: ''
+    },
+    pkl_file_path: {
+      type: String,
+      default: ''
+    },
+    x_list: {
+      type: Schema.Types.Mixed
+    },
+    y_list: {
+      type: Schema.Types.Mixed
+    },
+    train_split: {
+      type: Number,
+      default: 0
+    },
+    test_split: {
+      type: Number,
+      default: 0
+    },
+    api_hit_count: {
+      type: Number,
+      default: 0
+    },
+    filepath: {
+      type: String,
+      default: ''
+    },
+    steps: {
+      type: Number,
+      default: 0
+    },
+    file_extension: {
+      type: String,
+      default: ''
+    },
+    split_ratio: {
+      type: String,
+      default: ''
+    },
+
+  }]
+});
+module.exports = mongoose.model('NeuralZomeUser', tableSchema);
