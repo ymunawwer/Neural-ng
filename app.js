@@ -9,7 +9,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-DB2 = mongoose.createConnection(config.get('databaseName'), { useMongoClient: true, keepAlive: 300000, connectTimeoutMS: 30000 }, console.log);
+// DB2 = mongoose.createConnection(config.get('databaseName'), { useMongoClient: true, keepAlive: 300000, connectTimeoutMS: 30000 }, console.log);
 mongoose.connect(config.get('databaseName'), { useNewUrlParser: true });
 
 var indexRouter = require('./routes/index');
