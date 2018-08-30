@@ -57,7 +57,8 @@ exports.getDetailsForStep3 = function (req, res, next) {
                                     });
                                 res.sendResponse(result, 'Preprocessing successfully.');
                             } else {
-                                next(body.body);
+                                //next(body.body);
+                                throw new Error(body.body.msg);
                             }
                         }
                     });
@@ -103,7 +104,8 @@ exports.getDetailsForStep4 = function (req, res, next) {
                     //     });
                     res.sendResponse(result, 'Preprocessing successfully.');
                 } else {
-                    next(body.body);
+                    //next(body.body);
+                    throw new Error(body.body.msg);
                 }
             }
         });

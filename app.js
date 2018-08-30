@@ -39,7 +39,7 @@ const allowCrossDomain = (req, res, next) => {
 app.use((req, res, next) => {
   res.sendResponse = (body, message, statusCode) => {
     try {
-      let status = 'true';
+      let status = true;
       statusCode = statusCode || 200;
       message = message;
       res.json({ body, message, statusCode, status });
@@ -72,7 +72,7 @@ app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   let response = {};
   response.message = err;
-  response.status = 'false';
+  response.status = false;
   response.errodCode = err.status || 500;
   response.statusText = 'fail';
   response.body = {};

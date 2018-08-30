@@ -31,12 +31,12 @@ exports.getDetailsForStep2 = function (req, res, next) {
                         NeuralZoneData.user_details = res.req.body;
                         if (body.length > 0) {
                             if ((body[0].premium) || (body[0].total_model_count < 3) || (body[0].total_api_hit_count < 200)) {
-                                sendDataToAI(NeuralZoneData, 1, body[0], next);
+                                sendDataToAI(NeuralZoneData, 1, body[0], res);
                             } else {
                                 next('Buy premium');
                             }
                         } else {
-                            sendDataToAI(NeuralZoneData, 0, {}, next);
+                            sendDataToAI(NeuralZoneData, 0, {}, res);
                         }
                     }
                 });
@@ -68,7 +68,7 @@ exports.getUserData = function (req, res) {
     }
 }
 
-function sendDataToAI(NeuralZoneData, num, data, next) {
+function sendDataToAI(NeuralZoneData, num, data, res) {
     let formData = {
         file: {
             value: fs.createReadStream(NeuralZoneData.file_details.path),
@@ -87,9 +87,7 @@ function sendDataToAI(NeuralZoneData, num, data, next) {
         formData: formData
     }, function (error, body) {
         if (error) {
-            console.log('error');
-            console.log(error);
-            next('Network Error');
+            throw new Error('Network Error');
         } else {
             if (typeof (body.body) == "string") {
                 var result = JSON.parse(body.body);
@@ -110,9 +108,7 @@ function sendDataToAI(NeuralZoneData, num, data, next) {
                             if (err) {
                                 console.log(err);
                             } else {
-                                console.log(data);
-                                next(result);
-                                //res.sendResponse(result, 'User created successfully.');
+                                res.sendResponse(result, 'User created successfully.');
                             }
                         });
                     } else {
@@ -135,16 +131,15 @@ function sendDataToAI(NeuralZoneData, num, data, next) {
                                 }
                             }, { multi: true }, function (err, record) {
                                 if (err) {
-                                    next('error');
+                                    throw new Error('Network Error');
                                 } else {
-                                    next(result);
-                                    //next('Success');
+                                    res.sendResponse(result, 'User updated successfully.');
                                 }
                             });
                     }
                 }
             } else {
-                next(body.body);
+                throw new Error(body.body.msg);
             }
         }
     });
