@@ -1,4 +1,4 @@
 {
-  "databaseName": "mongodb://localhost:27017/NeuralZome",
+  "databaseName": "mongodb://13.58.82.47:27017/NeuralZome",
   "ai_URL": "http://13.58.82.47:5000/"
 }
