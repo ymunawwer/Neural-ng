@@ -87,7 +87,7 @@ function sendDataToAI(NeuralZoneData, num, data, res) {
         formData: formData
     }, function (error, body) {
         if (error) {
-            throw new Error('Network Error');
+            next(error);
         } else {
             if (typeof (body.body) == "string") {
                 var result = JSON.parse(body.body);
@@ -139,7 +139,7 @@ function sendDataToAI(NeuralZoneData, num, data, res) {
                     }
                 }
             } else {
-                throw new Error(body.body.msg);
+                next(body.body);
             }
         }
     });
