@@ -9,7 +9,7 @@ var NeuralZoneData = {};
 
 const storage = multer.diskStorage({
     filename: function (req, file, cb) {
-        cb(null, file.fieldname + '-' + Date.now() + '.csv');
+        cb(null, file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.').pop());
     }
 });
 const upload = multer({ storage: storage }).single('file');
@@ -43,103 +43,6 @@ exports.getDetailsForStep2 = function (req, res, next) {
             } else {
                 next('File and Email is required');
             }
-            // NeuralZoneData.user_details = res.req.body;
-            // neuralZomeUserModel.find({ 'email': NeuralZoneData.user_details.email }, function (err, body) {
-            //     if (err) {
-            //         console.log(err);
-            //     } else {
-            //         if(body.length > 0){
-
-            //         } else {
-            //             next('User does not exist');
-            //         }
-            //         if ((body[0].premium) || (body[0].total_model_count < 3) || (body[0].total_api_hit_count < 200)) {
-            //             if (file_details) {
-            //                 let formData = {
-            //                     file: {
-            //                         value: fs.createReadStream(file_details.path),
-            //                         options: {
-            //                             filename: file_details.filename,
-            //                             contentType: 'text/csv'
-            //                         }
-            //                     }
-            //                 };
-            //                 request.post({
-            //                     url: ai_url + 'uploader',
-            //                     headers: {
-            //                         'Content-Type': 'multipart/form-data'
-            //                     },
-            //                     formData: formData
-            //                 }, function (error, body) {
-            //                     if (error) {
-            //                         console.log('error');
-            //                         console.log(error);
-            //                         res.send(error);
-            //                     } else {
-            //                         var result = JSON.parse(body.body);
-            //                         var step1Result = {
-            //                             'email': NeuralZoneData.user_details.email,
-            //                             'model': [{
-            //                                 'model_id': result.modelId[0],
-            //                                 'filepath': result.filePath,
-            //                                 'steps': parseInt(NeuralZoneData.user_details.steps),
-            //                                 'file_extension': result.fileExtension
-            //                             }],
-            //                         };
-            //                         new neuralZomeUserModel(step1Result).save(function (err, data) {
-            //                             if (err) {
-            //                                 console.log(err);
-            //                             } else {
-            //                                 NeuralZoneData.mongoDetails = data;
-            //                                 NeuralZoneData.filePathDetails = result;
-            //                                 console.log(NeuralZoneData);
-            //                                 var fileDetails = { 'filePath': result.filePath, 'fileExtension': result.fileExtension };
-            //                                 request.post({
-            //                                     url: ai_url + 'parse_api',
-            //                                     headers: {
-            //                                         'Content-Type': 'application/json'
-            //                                     },
-            //                                     json: fileDetails
-            //                                 }, function (error, body) {
-            //                                     if (error) {
-            //                                         console.log('error');
-            //                                         console.log(error);
-            //                                         res.send(error);
-            //                                     } else {
-            //                                         //var result = body.body;
-            //                                         var result = Array.isArray(body.body) ? body.body : [body.body];
-            //                                         if (result[0].status == 'true') {
-            //                                             neuralZomeUserModel.update({
-            //                                                 _id: NeuralZoneData.mongoDetails._id,
-            //                                                 "model.model_id": result[0].modelId[0]
-            //                                             }, { '$set': { 'model.$.step2_details': result } }, { multi: true }, function (err, record) {
-            //                                                 if (err) {
-            //                                                     console.log(err);
-            //                                                 } else {
-            //                                                     console.log(record);
-            //                                                     NeuralZoneData.fileDetails = result;
-            //                                                     console.log(NeuralZoneData);
-            //                                                     return res.sendResponse({
-
-            //                                                     }, "NeuralZome user created successfully");
-            //                                                 }
-            //                                             });
-            //                                         }
-            //                                     }
-            //                                 });
-            //                             }
-            //                         });
-            //                     }
-            //                 });
-            //             } else {
-            //                 next('file is required');  
-            //             }
-            //         } else {
-            //             next('Buy premium');
-            //         }
-
-            //     }
-            // });
         })
     } catch (ex) {
         return ex;
@@ -171,7 +74,7 @@ function sendDataToAI(NeuralZoneData, num, data, next) {
             value: fs.createReadStream(NeuralZoneData.file_details.path),
             options: {
                 filename: NeuralZoneData.file_details.filename,
-                contentType: 'text/csv'
+                contentType: NeuralZoneData.file_details.mimetype
             }
         },
         email: NeuralZoneData.user_details.email
@@ -188,110 +91,61 @@ function sendDataToAI(NeuralZoneData, num, data, next) {
             console.log(error);
             next('Network Error');
         } else {
-            var result = JSON.parse(body.body);
-            var obj;
-            console.log(result);
-            if (result.status) {
-                if (num == 0) {
-                    obj = {
-                        email: result.email,
-                        model: [{
-                            model_id: result.modelId[0],
+            if (typeof (body.body) == "string") {
+                var result = JSON.parse(body.body);
+                var obj;
+                if (result.status == 'true') {
+                    if (num == 0) {
+                        obj = {
+                            email: result.email,
+                            model: [{
+                                model_id: result.modelId,
+                                data_types: JSON.stringify(result.datatypes),
+                                filepath: result.filePath,
+                                steps: parseInt(NeuralZoneData.user_details.steps),
+                                file_extension: result.fileExtension
+                            }]
+                        };
+                        new neuralZomeUserModel(obj).save(function (err, data) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                console.log(data);
+                                next(result);
+                                //res.sendResponse(result, 'User created successfully.');
+                            }
+                        });
+                    } else {
+                        data.model.push({
+                            model_id: result.modelId,
                             data_types: JSON.stringify(result.datatypes),
                             filepath: result.filePath,
                             steps: parseInt(NeuralZoneData.user_details.steps),
                             file_extension: result.fileExtension
-                        }]
-                    };
-                    new neuralZomeUserModel(obj).save(function (err, data) {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            console.log(data);
-                            next(result);
-                            //res.sendResponse(result, 'User created successfully.');
-                        }
-                    });
-                } else {
-                    data.model.push({
-                        model_id: result.modelId[0],
-                        data_types: JSON.stringify(result.datatypes),
-                        filepath: result.filePath,
-                        steps: parseInt(NeuralZoneData.user_details.steps),
-                        file_extension: result.fileExtension
-                    })
-                    obj = {
-                        model: data.model
+                        })
+                        obj = {
+                            model: data.model
 
-                    };
-                    neuralZomeUserModel.update({
-                        email: result.email
-                    }, {
-                            '$set': {
-                                'model': data.model
-                            }
-                        }, { multi: true }, function (err, record) {
-                            if(err){
-                                next('error');
-                            } else {
-                                next(result);
-                                //next('Success');
-                            }
-                        });
+                        };
+                        neuralZomeUserModel.update({
+                            email: result.email
+                        }, {
+                                '$set': {
+                                    'model': data.model
+                                }
+                            }, { multi: true }, function (err, record) {
+                                if (err) {
+                                    next('error');
+                                } else {
+                                    next(result);
+                                    //next('Success');
+                                }
+                            });
+                    }
                 }
+            } else {
+                next(body.body);
             }
-            // var step1Result = {
-            //     'email': NeuralZoneData.user_details.email,
-            //     'model': [{
-            //         'model_id': result.modelId[0],
-            //         'filepath': result.filePath,
-            //         'steps': parseInt(NeuralZoneData.user_details.steps),
-            //         'file_extension': result.fileExtension
-            //     }],
-            // };
-            // new neuralZomeUserModel(step1Result).save(function (err, data) {
-            //     if (err) {
-            //         console.log(err);
-            //     } else {
-            //         NeuralZoneData.mongoDetails = data;
-            //         NeuralZoneData.filePathDetails = result;
-            //         console.log(NeuralZoneData);
-            //         var fileDetails = { 'filePath': result.filePath, 'fileExtension': result.fileExtension };
-            //         request.post({
-            //             url: ai_url + 'parse_api',
-            //             headers: {
-            //                 'Content-Type': 'application/json'
-            //             },
-            //             json: fileDetails
-            //         }, function (error, body) {
-            //             if (error) {
-            //                 console.log('error');
-            //                 console.log(error);
-            //                 res.send(error);
-            //             } else {
-            //                 //var result = body.body;
-            //                 var result = Array.isArray(body.body) ? body.body : [body.body];
-            //                 if (result[0].status == 'true') {
-            //                     neuralZomeUserModel.update({
-            //                         _id: NeuralZoneData.mongoDetails._id,
-            //                         "model.model_id": result[0].modelId[0]
-            //                     }, { '$set': { 'model.$.step2_details': result } }, { multi: true }, function (err, record) {
-            //                         if (err) {
-            //                             console.log(err);
-            //                         } else {
-            //                             console.log(record);
-            //                             NeuralZoneData.fileDetails = result;
-            //                             console.log(NeuralZoneData);
-            //                             return res.sendResponse({
-
-            //                             }, "NeuralZome user created successfully");
-            //                         }
-            //                     });
-            //                 }
-            //             }
-            //         });
-            //     }
-            // });
         }
     });
 }

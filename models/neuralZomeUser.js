@@ -32,6 +32,9 @@ const tableSchema = new Schema({
       type: String,
       default: ''
     },
+    hint: {
+      type: Schema.Types.Mixed
+    },
     data_types: {
       type: Schema.Types.Mixed
     },
@@ -76,11 +79,7 @@ const tableSchema = new Schema({
     file_extension: {
       type: String,
       default: ''
-    },
-    split_ratio: {
-      type: String,
-      default: ''
-    },
+    }
 
   }]
 });
