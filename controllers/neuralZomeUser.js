@@ -19,7 +19,6 @@ exports.getDetailsForStep2 = function (req, res, next) {
         var file_details;
         upload(req, res, function (err) {
             if (err) {
-                // An error occurred when uploading
                 return err;
             }
             if ((res.req.file) && (res.req.body.email)) {
@@ -51,7 +50,6 @@ exports.getDetailsForStep2 = function (req, res, next) {
 
 exports.getUserData = function (req, res) {
     try {
-        console.log(req.params);
         neuralZomeUserModel.find({ email: req.params.email }, (err, data) => {
             if (err) {
                 console.log(err);
@@ -123,12 +121,11 @@ function sendDataToAI(NeuralZoneData, num, data, res) {
                             model: data.model
 
                         };
-                        neuralZomeUserModel.update({
+                        neuralZomeUserModel.findOneAndUpdate({
                             email: result.email
                         }, {
-                                '$set': {
-                                    'model': data.model
-                                }
+                                'model': data.model
+
                             }, { multi: true }, function (err, record) {
                                 if (err) {
                                     throw new Error('Network Error');

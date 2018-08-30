@@ -68,6 +68,10 @@ const tableSchema = new Schema({
       type: Number,
       default: 0
     },
+    model_count: {
+      type: Number,
+      default: 0
+    },
     filepath: {
       type: String,
       default: ''
