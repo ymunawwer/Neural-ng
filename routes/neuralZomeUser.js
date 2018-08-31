@@ -8,6 +8,6 @@ var preprocessModelingController = require(CONTROLLERS + 'preprocessModeling');
 router.post('/getDetailsForStep2', neuralzomeUserController.getDetailsForStep2);
 router.post('/getDetailsForStep3', preprocessModelingController.getDetailsForStep3);
 router.post('/getDetailsForStep4', preprocessModelingController.getDetailsForStep4);
-router.get('/getUserData/email', neuralzomeUserController.getUserData);
+router.post('/getDetailsForPredict', neuralzomeUserController.getDetailsForPredict);
 
 module.exports = router;

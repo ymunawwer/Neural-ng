@@ -48,13 +48,19 @@ exports.getDetailsForStep2 = function (req, res, next) {
     }
 }
 
-exports.getUserData = function (req, res) {
+exports.getDetailsForPredict = function (req, res) {
     try {
-        neuralZomeUserModel.find({ email: req.params.email }, (err, data) => {
+        var modelId = req.body.modelId;
+        neuralZomeUserModel.find({ email: req.body.email, "model.model_id": req.body.modelId }, (err, data) => {
             if (err) {
                 console.log(err);
             } else {
-                console.log(data);
+                var result = data[0].model.find(function (item) {
+                    if (item.model_id == modelId) {
+                        return item;
+                    }
+                });
+                var data = {'email': data[0].email, 'model_details': result};
                 return res.sendResponse({
                     data
                 }, "User data fetched successfully");
