@@ -30,12 +30,12 @@ exports.getDetailsForStep2 = function (req, res, next) {
                         NeuralZoneData.user_details = res.req.body;
                         if (body.length > 0) {
                             if ((body[0].premium) || (body[0].total_model_count < 3) || (body[0].total_api_hit_count < 200)) {
-                                sendDataToAI(NeuralZoneData, 1, body[0], res);
+                                sendDataToAI(NeuralZoneData, 1, body[0], res, next);
                             } else {
                                 next('Buy premium');
                             }
                         } else {
-                            sendDataToAI(NeuralZoneData, 0, {}, res);
+                            sendDataToAI(NeuralZoneData, 0, {}, res, next);
                         }
                     }
                 });
@@ -66,7 +66,7 @@ exports.getUserData = function (req, res) {
     }
 }
 
-function sendDataToAI(NeuralZoneData, num, data, res) {
+function sendDataToAI(NeuralZoneData, num, data, res, next) {
     let formData = {
         file: {
             value: fs.createReadStream(NeuralZoneData.file_details.path),
@@ -85,9 +85,9 @@ function sendDataToAI(NeuralZoneData, num, data, res) {
         formData: formData
     }, function (error, body) {
         if (error) {
-            console.log(error);
+            next(error);
         } else {
-            if (typeof (body.body) == "string") {
+            if ((typeof (body.body) == "string") && JSON.parse(body.body).status == 'true') {
                 var result = JSON.parse(body.body);
                 var obj;
                 if (result.status == 'true') {
