@@ -85,7 +85,7 @@ function sendDataToAI(NeuralZoneData, num, data, res) {
         formData: formData
     }, function (error, body) {
         if (error) {
-            next(error);
+            console.log(error);
         } else {
             if (typeof (body.body) == "string") {
                 var result = JSON.parse(body.body);
