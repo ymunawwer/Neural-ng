@@ -128,7 +128,7 @@ function sendDataToAI(NeuralZoneData, num, data, res) {
 
                             }, { multi: true }, function (err, record) {
                                 if (err) {
-                                    throw new Error('Network Error');
+                                    next('Network Error');
                                 } else {
                                     res.sendResponse(result, 'User updated successfully.');
                                 }
