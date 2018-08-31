@@ -136,7 +136,7 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                     }
                 }
             } else {
-                next(body.body);
+                next(JSON.parse(body.body));
             }
         }
     });
