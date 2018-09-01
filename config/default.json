@@ -1,4 +1,12 @@
 {
   "databaseName": "mongodb://13.58.82.47:27017/NeuralZome",
-  "ai_URL": "http://13.58.82.47:5000/"
+  "ai_URL": "http://13.58.82.47:5000/",
+  "free_version": {
+    "total_model_count": 3,
+    "total_api_hit_count": 200
+  },
+  "gold_version": {
+    "total_model_count": 50,
+    "total_api_hit_count": 15000
+  }
 }
