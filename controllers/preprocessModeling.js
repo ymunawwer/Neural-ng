@@ -15,11 +15,11 @@ exports.getDetailsForStep3 = function (req, res, next) {
             } else {
                 if (record.length > 0) {
                     if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('free_version.total_model_count')) && (record[0].total_api_hit_count < config.get('free_version.total_api_hit_count'))) {
-                        sendPreprocessingData(bodyDetails, res);
+                        sendPreprocessingData(bodyDetails, res, next);
                     } else if ((record[0].premium == 'Gold') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
-                        sendPreprocessingData(bodyDetails, res);
+                        sendPreprocessingData(bodyDetails, res, next);
                     } else if ((record[0].premium == 'Platinum')) {
-                        sendPreprocessingData(bodyDetails, res);
+                        sendPreprocessingData(bodyDetails, res, next);
                     } else {
                         next('Buy premium');
                     }
@@ -33,7 +33,7 @@ exports.getDetailsForStep3 = function (req, res, next) {
     }
 }
 
-function sendPreprocessingData(bodyDetails, res) {
+function sendPreprocessingData(bodyDetails, res, next) {
     neuralZomeUserModel.findOneAndUpdate({
         email: bodyDetails.email,
         "model.model_id": bodyDetails.modelId
@@ -97,11 +97,11 @@ exports.getDetailsForStep4 = function (req, res, next) {
             } else {
                 if (record.length > 0) {
                     if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('free_version.total_model_count')) && (record[0].total_api_hit_count < config.get('free_version.total_api_hit_count'))) {
-                        sendPredictData(bodyDetails, res);
+                        sendPredictData(bodyDetails, res, next);
                     } else if ((record[0].premium == 'Gold') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
-                        sendPredictData(bodyDetails, res);
+                        sendPredictData(bodyDetails, res, next);
                     } else if ((record[0].premium == 'Platinum')) {
-                        sendPredictData(bodyDetails, res);
+                        sendPredictData(bodyDetails, res, next);
                     } else {
                         next('Buy premium');
                     }
@@ -115,7 +115,7 @@ exports.getDetailsForStep4 = function (req, res, next) {
     }
 }
 
-function sendPredictData(bodyDetails, res) {
+function sendPredictData(bodyDetails, res, next) {
     request.post({
         url: ai_url + 'predict',
         headers: {
