@@ -20,8 +20,8 @@ const tableSchema = new Schema({
     default: 0
   },
   premium: {
-    type: Boolean,
-    default: false
+    type: String,
+    default: 'Free'
   },
   model: [{
     model_id: {
