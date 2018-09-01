@@ -8,6 +8,7 @@ const neuralZomeUserModel = require(MODELS + 'neuralZomeUser');
 
 exports.getDetailsForStep3 = function (req, res, next) {
     try {
+        var bodyDetails = req.body;
         neuralZomeUserModel.findOneAndUpdate({
             email: req.body.email,
             "model.model_id": req.body.modelId
@@ -43,7 +44,8 @@ exports.getDetailsForStep3 = function (req, res, next) {
                                         'model.$.test_split': result.test_split,
                                         'model.$.model_file_path': result.download,
                                         'model.$.pkl_file_path': result.pklfile,
-                                        'model.$.hint': result.hint
+                                        'model.$.hint': result.hint,
+                                        'model.$.steps': bodyDetails.steps
                                     }, { multi: true }, function (err, record) {
                                         if (err) {
                                             console.log(err);
@@ -66,6 +68,7 @@ exports.getDetailsForStep3 = function (req, res, next) {
 
 exports.getDetailsForStep4 = function (req, res, next) {
     try {
+        var bodyDetails = req.body;
         request.post({
             url: ai_url + 'predict',
             headers: {
@@ -82,6 +85,7 @@ exports.getDetailsForStep4 = function (req, res, next) {
                         email: result.email,
                         "model.model_id": result.modelId
                     }, {
+                            'model.$.steps': bodyDetails.steps,
                             $inc: { total_api_hit_count: 1, 'model.$.api_hit_count': 1 },
                         }, { multi: true }, function (err, record) {
                             if (err) {
