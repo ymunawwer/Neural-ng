@@ -48,22 +48,26 @@ exports.getDetailsForStep2 = function (req, res, next) {
     }
 }
 
-exports.getDetailsForPredict = function (req, res) {
+exports.getDetailsForPredict = function (req, res, next) {
     try {
         var modelId = req.body.modelId;
         neuralZomeUserModel.find({ email: req.body.email, "model.model_id": req.body.modelId }, (err, data) => {
             if (err) {
                 console.log(err);
             } else {
-                var result = data[0].model.find(function (item) {
-                    if (item.model_id == modelId) {
-                        return item;
-                    }
-                });
-                var data = {'email': data[0].email, 'model_details': result};
-                return res.sendResponse({
-                    data
-                }, "User data fetched successfully");
+                if ((data[0].premium == false) && (data[0].total_model_count < 3) && (data[0].total_api_hit_count < 200)) {
+                    var result = data[0].model.find(function (item) {
+                        if (item.model_id == modelId) {
+                            return item;
+                        }
+                    });
+                    var data = { 'email': data[0].email, 'model_details': result };
+                    return res.sendResponse({
+                        data
+                    }, "User data fetched successfully");
+                } else {
+                    next('Buy premium');
+                }
             }
         });
 
