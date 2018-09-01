@@ -61,10 +61,14 @@ exports.getDetailsForPredict = function (req, res, next) {
                             return item;
                         }
                     });
-                    var data = { 'email': data[0].email, 'model_details': result };
-                    return res.sendResponse({
-                        data
-                    }, "User data fetched successfully");
+                    if (result.steps == 2) {
+                        var data = { 'email': data[0].email, 'model_details': result };
+                        return res.sendResponse({
+                            data
+                        }, "User data fetched successfully");
+                    } else {
+                        next('Please complete step2')
+                    }
                 } else {
                     next('Buy premium');
                 }
