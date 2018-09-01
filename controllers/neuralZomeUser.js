@@ -61,13 +61,13 @@ exports.getDetailsForPredict = function (req, res, next) {
                             return item;
                         }
                     });
-                    if (result.steps == 2) {
+                    if ((result.steps == 2) || result.steps == 3) {
                         var data = { 'email': data[0].email, 'model_details': result };
                         return res.sendResponse({
                             data
                         }, "User data fetched successfully");
                     } else {
-                        next('Please complete step2')
+                        next('Please complete step 2')
                     }
                 } else {
                     next('Buy premium');
