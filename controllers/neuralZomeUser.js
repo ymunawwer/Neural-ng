@@ -29,7 +29,7 @@ exports.getDetailsForStep2 = function (req, res, next) {
                         NeuralZoneData.file_details = res.req.file;
                         NeuralZoneData.user_details = res.req.body;
                         if (body.length > 0) {
-                            if ((body[0].premium == 'Free') && (body[0].total_model_count < config.get('free_version.total_model_count')) && (body[0].total_api_hit_count < config.get('free_version.total_api_hit_count'))) {
+                            if ((body[0].premium == 'Free') && (body[0].total_model_count < config.get('gold_version.total_model_count')) && (body[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
                                 sendDataToAI(NeuralZoneData, 1, body[0], res, next);
                             } else if ((body[0].premium == 'Gold') && (body[0].total_model_count < config.get('gold_version.total_model_count')) && (body[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
                                 sendDataToAI(NeuralZoneData, 1, body[0], res, next);
@@ -68,7 +68,7 @@ exports.getDetailsForPredict = function (req, res, next) {
                     });
                     if ((result.steps == 2) || result.steps == 3) {
                         data = { 'email': record[0].email,  'model_details': result };
-                        if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('free_version.total_model_count')) && (record[0].total_api_hit_count < config.get('free_version.total_api_hit_count'))) {
+                        if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
                             return res.sendResponse({
                                 data
                             }, "User data fetched successfully");

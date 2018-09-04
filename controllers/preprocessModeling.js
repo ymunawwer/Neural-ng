@@ -14,7 +14,7 @@ exports.getDetailsForStep3 = function (req, res, next) {
                 console.log(err);
             } else {
                 if (record.length > 0) {
-                    if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('free_version.total_model_count')) && (record[0].total_api_hit_count < config.get('free_version.total_api_hit_count'))) {
+                    if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
                         sendPreprocessingData(bodyDetails, res, next);
                     } else if ((record[0].premium == 'Gold') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
                         sendPreprocessingData(bodyDetails, res, next);
@@ -96,7 +96,7 @@ exports.getDetailsForStep4 = function (req, res, next) {
                 console.log(err);
             } else {
                 if (record.length > 0) {
-                    if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('free_version.total_model_count')) && (record[0].total_api_hit_count < config.get('free_version.total_api_hit_count'))) {
+                    if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
                         sendPredictData(bodyDetails, res, next);
                     } else if ((record[0].premium == 'Gold') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
                         sendPredictData(bodyDetails, res, next);
