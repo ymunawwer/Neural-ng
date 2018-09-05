@@ -1,0 +1,4 @@
+{"level":"info","message":"[object Object]","timestamp":"2018-09-05T14:16:20.643Z"}
+{"level":"info","message":"::1 - - [05/Sep/2018:14:16:20 +0000] \"POST /neuralZome/getDetailsForStep2 HTTP/1.1\" 200 6798 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-05T14:16:20.655Z"}
+{"level":"info","message":"Email : sasikumargamasome@gmail.com - ModelId : 2018090519-78102","timestamp":"2018-09-05T14:23:26.340Z"}
+{"level":"info","message":"::1 - - [05/Sep/2018:14:23:26 +0000] \"POST /neuralZome/getDetailsForStep3 HTTP/1.1\" 200 889 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-05T14:23:26.353Z"}

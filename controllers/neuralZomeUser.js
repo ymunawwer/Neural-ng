@@ -69,14 +69,17 @@ exports.getDetailsForPredict = function (req, res, next) {
                     if ((result.steps == 2) || result.steps == 3) {
                         data = { 'email': record[0].email,  'model_details': result };
                         if ((record[0].premium == 'Free') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
+                            data.info = false;
                             return res.sendResponse({
                                 data
                             }, "User data fetched successfully");
                         } else if ((record[0].premium == 'Gold') && (record[0].total_model_count < config.get('gold_version.total_model_count')) && (record[0].total_api_hit_count < config.get('gold_version.total_api_hit_count'))) {
+                            data.info = false;
                             return res.sendResponse({
                                 data
                             }, "User data fetched successfully");
                         } else if ((record[0].premium == 'Platinum')) {
+                            data.info = false;
                             return res.sendResponse({
                                 data
                             }, "User data fetched successfully");
@@ -137,6 +140,7 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                             if (err) {
                                 console.log(err);
                             } else {
+                                result.info = false;
                                 res.sendResponse(result, 'User created successfully.');
                             }
                         });
@@ -161,6 +165,7 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                                 if (err) {
                                     next('Network Error');
                                 } else {
+                                    result.info = false;
                                     res.sendResponse(result, 'User updated successfully.');
                                 }
                             });

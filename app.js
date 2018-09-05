@@ -7,10 +7,12 @@ var path = require('path');
 const config = require('config');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var morgan = require('morgan');
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
 // DB2 = mongoose.createConnection(config.get('databaseName'), { useMongoClient: true, keepAlive: 300000, connectTimeoutMS: 30000 }, console.log);
 mongoose.connect(config.get('databaseName'), { useNewUrlParser: true });
+const winston = require('./config/winston');
 
 var indexRouter = require('./routes/index');
 var neuralZomeUserRouter = require('./routes/neuralZomeUser');
@@ -22,6 +24,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 app.use(logger('dev'));
+app.use(morgan('combined', { stream: winston.stream }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const allowCrossDomain = (req, res, next) => {
@@ -42,6 +45,9 @@ app.use((req, res, next) => {
       let status = true;
       statusCode = statusCode || 200;
       message = message;
+      if(body.info == true){
+        winston.info(`${'Email : '+body.email} - ${'ModelId : '+body.modelId}`);
+      }
       res.json({ body, message, statusCode, status });
     }
     catch (ex) {

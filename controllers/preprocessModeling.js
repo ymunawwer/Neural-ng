@@ -76,6 +76,7 @@ function sendPreprocessingData(bodyDetails, res, next) {
                                         console.log(err);
                                     } else {
                                         console.log(record);
+                                        result.info = true;
                                         res.sendResponse(result, 'Preprocessing successfully.');
                                     }
                                 });
@@ -139,6 +140,7 @@ function sendPredictData(bodyDetails, res, next) {
                             console.log(err);
                         } else {
                             console.log(record);
+                            result.info = false;
                             res.sendResponse(result, 'Preprocessing successfully.');
                         }
                     });
