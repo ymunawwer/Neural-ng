@@ -2,3 +2,12 @@
 {"level":"info","message":"::1 - - [05/Sep/2018:14:16:20 +0000] \"POST /neuralZome/getDetailsForStep2 HTTP/1.1\" 200 6798 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-05T14:16:20.655Z"}
 {"level":"info","message":"Email : sasikumargamasome@gmail.com - ModelId : 2018090519-78102","timestamp":"2018-09-05T14:23:26.340Z"}
 {"level":"info","message":"::1 - - [05/Sep/2018:14:23:26 +0000] \"POST /neuralZome/getDetailsForStep3 HTTP/1.1\" 200 889 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-05T14:23:26.353Z"}
+{"level":"info","message":"::1 - - [06/Sep/2018:08:18:55 +0000] \"POST /neuralZome/getDetailsForStep2 HTTP/1.1\" 200 6810 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-06T08:18:55.080Z"}
+{"level":"info","message":"Email : abhilash.k.paran@gmail.com - ModelId : 2018090618-83072","timestamp":"2018-09-06T08:20:17.018Z"}
+{"level":"info","message":"::1 - - [06/Sep/2018:08:20:17 +0000] \"POST /neuralZome/getDetailsForStep3 HTTP/1.1\" 200 888 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-06T08:20:17.021Z"}
+{"level":"info","message":"Email : abhilash.k.paran@gmail.com - ModelId : 2018090618-83072","timestamp":"2018-09-06T09:20:56.238Z"}
+{"level":"info","message":"::1 - - [06/Sep/2018:09:20:56 +0000] \"POST /neuralZome/getDetailsForStep3 HTTP/1.1\" 200 888 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-06T09:20:56.239Z"}
+{"level":"info","message":"Email : abhilash.k.paran@gmail.com - ModelId : 2018090618-83072","timestamp":"2018-09-06T09:22:19.537Z"}
+{"level":"info","message":"::1 - - [06/Sep/2018:09:22:19 +0000] \"POST /neuralZome/getDetailsForStep3 HTTP/1.1\" 200 888 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-06T09:22:19.543Z"}
+{"level":"info","message":"Email : abhilash.k.paran@gmail.com - ModelId : 2018090618-83072","timestamp":"2018-09-06T09:23:53.882Z"}
+{"level":"info","message":"::1 - - [06/Sep/2018:09:23:53 +0000] \"POST /neuralZome/getDetailsForStep3 HTTP/1.1\" 200 888 \"-\" \"PostmanRuntime/7.1.1\"\n","timestamp":"2018-09-06T09:23:53.890Z"}

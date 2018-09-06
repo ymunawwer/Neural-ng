@@ -28,33 +28,33 @@ app.use(morgan('combined', { stream: winston.stream }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 const allowCrossDomain = (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+ res.header('Access-Control-Allow-Origin', '*');
+ res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+ res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-  // intercept OPTIONS method
-  if ('OPTIONS' == req.method) {
-    res.sendStatus(200);
-  } else {
-    next();
-  }
+ // intercept OPTIONS method
+ if ('OPTIONS' == req.method) {
+   res.sendStatus(200);
+ } else {
+   next();
+ }
 };
 app.use((req, res, next) => {
-  res.sendResponse = (body, message, statusCode) => {
-    try {
-      let status = true;
-      statusCode = statusCode || 200;
-      message = message;
-      if(body.info == true){
-        winston.info(`${'Email : '+body.email} - ${'ModelId : '+body.modelId}`);
-      }
-      res.json({ body, message, statusCode, status });
-    }
-    catch (ex) {
-      return next(ex);
-    }
-  }
-  next();
+ res.sendResponse = (body, message, statusCode) => {
+   try {
+     let status = true;
+     statusCode = statusCode || 200;
+     message = message;
+     if(body.info == true){
+       winston.info(`${'Email : '+body.email} - ${'ModelId : '+body.modelId}`);
+     }
+     res.json({ body, message, statusCode, status });
+   }
+   catch (ex) {
+     return next(ex);
+   }
+ }
+ next();
 });
 app.use(allowCrossDomain);
 app.use(cookieParser());
@@ -68,21 +68,23 @@ app.use('/', indexRouter);
 //   next(createError(404));
 // });
 app.use((req, res, next) => {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+ var err = new Error('Not Found');
+ err.status = 404;
+ next(err);
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  let response = {};
-  response.message = err;
-  response.status = false;
-  response.errodCode = err.status || 500;
-  response.statusText = 'fail';
-  response.body = {};
-  res.json(response);
+ // set locals, only providing error in development
+ let response = {};
+ response.message = err;
+ response.status = false;
+ response.errodCode = err.status || 500;
+ response.statusText = 'fail';
+ response.body = {};
+ res.json(response);
 });
 
 module.exports = app;
+
+
