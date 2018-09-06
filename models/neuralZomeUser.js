@@ -28,6 +28,7 @@ const tableSchema = new Schema({
       type: String,
       default: ''
     },
+    created_at: Date,
     accuracy: {
       type: String,
       default: ''
