@@ -180,3 +180,37 @@ function sendPredictData(bodyDetails, res, next) {
     });
 }
 
+exports.contactus = function (req, res, next) {
+    try {
+        var contactusData = req.body;
+
+        console.log('form data', contactusData);
+
+
+        const mailOptions = {
+            from: 'support@neuralzome.com', // sender address
+            to: 'mohan@gamasome.com', // list of receivers
+            subject: 'Query from customer-Neuralzome', // Subject line
+            html: '<p>Hi,</p>' +
+                '<p>Following are the details and query from the customer</p>' +
+                '<p>Name: ' + contactusData.name + '</p>' +
+                '<p>Email: ' + contactusData.email + '</p>' +
+                '<p>Mobile: ' + contactusData.mobile + '</p>' +
+                '<p>Message: ' + contactusData.message + '</p>'                
+        };
+
+        transporter.sendMail(mailOptions, function (err, info) {
+            if (err) {
+                console.log(err);
+                next(err);
+            } else {
+                res.sendResponse(info, 'successfully.');
+                console.log('email sent successfully', info);
+            }
+        });
+
+        
+    } catch (ex) {
+        return ex;
+    }
+}

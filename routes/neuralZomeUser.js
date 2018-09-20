@@ -9,5 +9,8 @@ router.post('/getDetailsForStep2', neuralzomeUserController.getDetailsForStep2);
 router.post('/getDetailsForStep3', preprocessModelingController.getDetailsForStep3);
 router.post('/getDetailsForStep4', preprocessModelingController.getDetailsForStep4);
 router.post('/getDetailsForPredict', neuralzomeUserController.getDetailsForPredict);
+router.post('/contactus', preprocessModelingController.contactus);
+
+
 
 module.exports = router;
