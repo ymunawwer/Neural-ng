@@ -189,7 +189,7 @@ exports.contactus = function (req, res, next) {
 
         const mailOptions = {
             from: 'support@neuralzome.com', // sender address
-            to: 'mohan@gamasome.com', // list of receivers
+            to: ['mohan@gamasome.com', 'prasanna@gamasome.com', 'pmohansivam@gmail.com'], // list of receivers
             subject: 'Query from customer-Neuralzome', // Subject line
             html: '<p>Hi,</p>' +
                 '<p>Following are the details and query from the customer</p>' +
