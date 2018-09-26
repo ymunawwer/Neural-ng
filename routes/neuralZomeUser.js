@@ -10,7 +10,8 @@ router.post('/getDetailsForStep3', preprocessModelingController.getDetailsForSte
 router.post('/getDetailsForStep4', preprocessModelingController.getDetailsForStep4);
 router.post('/getDetailsForPredict', neuralzomeUserController.getDetailsForPredict);
 router.post('/contactus', preprocessModelingController.contactus);
-
+router.post('/algo_select', neuralzomeUserController.getAccuracyDetails);
+router.post('/getHyperAlgo', neuralzomeUserController.getHyperAlgoDetails);
 
 
 module.exports = router;

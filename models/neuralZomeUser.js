@@ -39,8 +39,12 @@ const tableSchema = new Schema({
     data_types: {
       type: Schema.Types.Mixed
     },
-    algo: {
+    algo_hyper: {
       type: Schema.Types.Mixed,
+    },
+    algo: {
+      type: String,
+      default: ''
     },
     prob_type: {
       type: Schema.Types.Mixed,

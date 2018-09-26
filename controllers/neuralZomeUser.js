@@ -130,7 +130,7 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                             email: result.email,
                             model: [{
                                 model_id: result.modelId,
-                                algo: result.algo,
+                                algo_hyper: result.algo,
                                 prob_type: result.prob_type,
                                 data_types: result.datatypes,
                                 filepath: result.filePath,
@@ -144,13 +144,20 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                                 console.log(err);
                             } else {
                                 result.info = false;
-                                res.sendResponse(result, 'User created successfully.');
+                                var finalResult = {};
+                                finalResult.datatypes = result.datatypes;
+                                finalResult.email = result.email;
+                                finalResult.fileExtension = result.fileExtension;
+                                finalResult.filePath = result.filePath;
+                                finalResult.modelId = result.modelId;
+                                finalResult.prob_type = result.prob_type;
+                                res.sendResponse(finalResult, 'User created successfully.');
                             }
                         });
                     } else {
                         data.model.push({
                             model_id: result.modelId,
-                            algo: result.algo,
+                            algo_hyper: result.algo,
                             prob_type: result.prob_type,
                             data_types: result.datatypes,
                             filepath: result.filePath,
@@ -172,7 +179,14 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                                     next('Network Error');
                                 } else {
                                     result.info = false;
-                                    res.sendResponse(result, 'User updated successfully.');
+                                    var finalResult = {};
+                                    finalResult.datatypes = result.datatypes;
+                                    finalResult.email = result.email;
+                                    finalResult.fileExtension = result.fileExtension;
+                                    finalResult.filePath = result.filePath;
+                                    finalResult.modelId = result.modelId;
+                                    finalResult.prob_type = result.prob_type;
+                                    res.sendResponse(finalResult, 'User updated successfully.');
                                 }
                             });
                     }
@@ -184,3 +198,46 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
     });
 }
 
+exports.getAccuracyDetails = function (req, res, next) {
+    try {
+        var bodyDetails = req.body;
+        request.post({
+            url: ai_url + 'algo_select',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            json: bodyDetails
+        }, function (error, body) {
+            if (error) {
+                next(error);
+            } else {
+                var result = body.body;
+                res.sendResponse(result, 'fetching algo details successfully.');
+            }
+        });
+    } catch (ex) {
+        return ex;
+    }
+}
+
+exports.getHyperAlgoDetails = function (req, res, next) {
+    try {
+        neuralZomeUserModel.find({ email: req.body.email },
+            { model: { $elemMatch: { model_id: req.body.model_id } } }, (err, record) => {
+                if (err) {
+                    next(err)
+                } else {
+                    if (record.length > 0) {
+                        var finalResult = {};
+                        finalResult.email = req.body.email;
+                        finalResult.model = record[0].model;
+                        res.sendResponse(finalResult, 'fetching algo details successfully.');
+                    } else {
+                        next('Invalid data');
+                    }
+                }
+            });
+    } catch (ex) {
+        return ex;
+    }
+}
