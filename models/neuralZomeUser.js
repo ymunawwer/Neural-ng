@@ -40,8 +40,10 @@ const tableSchema = new Schema({
       type: Schema.Types.Mixed
     },
     algo: {
-      type: String,
-      default: ''
+      type: Schema.Types.Mixed,
+    },
+    prob_type: {
+      type: Schema.Types.Mixed,
     },
     model_file_path: {
       type: String,
