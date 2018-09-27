@@ -11,6 +11,9 @@ const tableSchema = new Schema({
     type: String,
     default: ''
   },
+  tt_split: {
+    type: Schema.Types.Mixed
+  },
   total_api_hit_count: {
     type: Number,
     default: 0
@@ -30,8 +33,7 @@ const tableSchema = new Schema({
     },
     created_at: Date,
     accuracy: {
-      type: String,
-      default: ''
+      type: Schema.Types.Mixed
     },
     hint: {
       type: Schema.Types.Mixed

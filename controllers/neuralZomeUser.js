@@ -128,6 +128,7 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                     if (num == 0) {
                         obj = {
                             email: result.email,
+                            tt_split: result.tt_split,
                             model: [{
                                 model_id: result.modelId,
                                 algo_hyper: result.algo,
@@ -172,6 +173,7 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
                         neuralZomeUserModel.findOneAndUpdate({
                             email: result.email
                         }, {
+                                tt_split: result.tt_split,
                                 'model': data.model
 
                             }, { multi: true }, function (err, record) {
@@ -200,43 +202,71 @@ function sendDataToAI(NeuralZoneData, num, data, res, next) {
 
 exports.getAccuracyDetails = function (req, res, next) {
     try {
+        var jsonStruct = {};
         var bodyDetails = req.body;
-        request.post({
-            url: ai_url + 'algo_select',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            json: bodyDetails
-        }, function (error, body) {
-            if (error) {
-                next(error);
-            } else {
-                var result = body.body;
-                res.sendResponse(result, 'fetching algo details successfully.');
-            }
-        });
-    } catch (ex) {
-        return ex;
-    }
-}
-
-exports.getHyperAlgoDetails = function (req, res, next) {
-    try {
-        neuralZomeUserModel.find({ email: req.body.email },
-            { model: { $elemMatch: { model_id: req.body.model_id } } }, (err, record) => {
-                if (err) {
-                    next(err)
+        jsonStruct.bodyDetails = bodyDetails;
+        if (bodyDetails.prediction_type == "custom") {
+            request.post({
+                url: ai_url + 'algo_select',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                json: bodyDetails
+            }, function (error, body) {
+                if (error) {
+                    next(error);
                 } else {
-                    if (record.length > 0) {
-                        var finalResult = {};
-                        finalResult.email = req.body.email;
-                        finalResult.model = record[0].model;
-                        res.sendResponse(finalResult, 'fetching algo details successfully.');
-                    } else {
-                        next('Invalid data');
-                    }
+                    var result = body.body;
+                    jsonStruct.result = result;
+                    neuralZomeUserModel.find({ email: result.email },
+                        { model: { $elemMatch: { model_id: result.modelId } } }, (err, record) => {
+                            if (err) {
+                                next(err)
+                            } else {
+                                if (record.length > 0) {
+                                    jsonStruct.model = record[0];
+                                    if (jsonStruct.model._doc.model[0] != undefined) {
+                                        Object.keys(jsonStruct.model._doc.model[0].algo_hyper).forEach(function (key) {
+                                            if (key.indexOf(jsonStruct.result.algo) != -1) {
+                                                var hyper_value = jsonStruct.model._doc.model[0].algo_hyper[key];
+                                                Object.keys(hyper_value).map(function (key, index) {
+                                                    hyper_value[key].accuracy = jsonStruct.result.accuracy[key];
+                                                });
+                                                jsonStruct.hyper_accuracy = hyper_value;
+                                            }
+                                        });
+                                        neuralZomeUserModel.findOneAndUpdate({
+                                            email: jsonStruct.result.email,
+                                            "model.model_id": jsonStruct.result.modelId
+                                        }, {
+                                                'model.$.algo_hyper': jsonStruct.model._doc.model[0].algo_hyper
+                                            }, { multi: true }, function (err, record) {
+                                                if (err) {
+                                                    next(err);
+                                                } else {
+                                                    var finalResult = {};
+                                                    finalResult.email = record.email;
+                                                    finalResult.algo = jsonStruct.result.algo;
+                                                    finalResult.prediction_type = jsonStruct.result.prediction_type;
+                                                    finalResult.tt_split = record.tt_split;
+                                                    finalResult.file_path = jsonStruct.model._doc.model[0].filepath;
+                                                    finalResult.model_id = jsonStruct.model._doc.model[0].model_id;
+                                                    finalResult.algo_hyper = jsonStruct.hyper_accuracy;
+                                                    res.sendResponse(finalResult, 'Preprocessing successfully.');
+                                                }
+                                            });
+                                    } else {
+                                        next('Invalid data');
+                                    }
+                                    var finalResult = {};
+                                } else {
+                                    next('Invalid data');
+                                }
+                            }
+                        });
                 }
             });
+        }
     } catch (ex) {
         return ex;
     }

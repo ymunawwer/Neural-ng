@@ -196,7 +196,7 @@ exports.contactus = function (req, res, next) {
                 '<p>Name: ' + contactusData.name + '</p>' +
                 '<p>Email: ' + contactusData.email + '</p>' +
                 '<p>Mobile: ' + contactusData.mobile + '</p>' +
-                '<p>Message: ' + contactusData.message + '</p>'                
+                '<p>Message: ' + contactusData.message + '</p>'
         };
 
         transporter.sendMail(mailOptions, function (err, info) {
@@ -209,7 +209,47 @@ exports.contactus = function (req, res, next) {
             }
         });
 
-        
+
+    } catch (ex) {
+        return ex;
+    }
+}
+
+exports.evaluateAccuracy = function (req, res, next) {
+    try {
+        var bodyDetails = req.body;
+        request.post({
+            url: ai_url + 'evaluate',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            json: bodyDetails
+        }, function (error, body) {
+            if (error) {
+                next(error);
+            } else {
+                var result = body.body;
+                var finalStruct = {};
+                finalStruct.result = result;
+                if (result.status == true) {
+                    res.sendResponse(result, 'Accuracy evaluated  successfully.');
+                    // neuralZomeUserModel.findOneAndUpdate({
+                    //     email: result.email,
+                    //     "model.model_id": result.modelId
+                    // }, {
+                    //         'model.$.accuracy': result.accuracy
+                    //     }, { multi: true }, function (err, record) {
+                    //         if (err) {
+                    //             next(err);
+                    //         } else {
+                    //             res.sendResponse(finalStruct.result, 'Accuracy evaluated  successfully.');
+                    //         }
+                    //     });
+                } else {
+                    next(result);
+                }
+            }
+        });
     } catch (ex) {
         return ex;
     }
