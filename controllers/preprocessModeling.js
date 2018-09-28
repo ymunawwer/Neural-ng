@@ -162,7 +162,7 @@ function sendPredictData(bodyDetails, res, next) {
                     email: result.email,
                     "model.model_id": result.modelId
                 }, {
-                        'model.$.steps': bodyDetails.steps,
+                        'model.$.steps': 3,
                         $inc: { total_api_hit_count: 1, 'model.$.api_hit_count': 1 },
                     }, { multi: true }, function (err, record) {
                         if (err) {
