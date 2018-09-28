@@ -246,6 +246,7 @@ exports.evaluateAccuracy = function (req, res, next) {
                                                 Object.keys(hyper_value).map(function (key, index) {
                                                     hyper_value[key].accuracy = finalStruct.result.accuracy[key] != undefined ? finalStruct.result.accuracy[key] : hyper_value[key].accuracy;
                                                 });
+                                                finalStruct.selected_algo = hyper_value;
                                                 finalStruct.hyper_accuracy = record[0]._doc.model[0].algo_hyper;
                                             }
                                         });
@@ -260,7 +261,7 @@ exports.evaluateAccuracy = function (req, res, next) {
                                                 } else {
                                                     var finalResult = {};
                                                     finalResult.email = finalStruct.result.email;
-                                                    finalResult.algo_hyper = finalStruct.hyper_accuracy;
+                                                    finalResult.algo_hyper = finalStruct.selected_algo;
                                                     finalResult.tt_split = finalStruct.record[0].tt_split;
                                                     finalResult.file_path = finalStruct.record[0]._doc.model[0].filepath;
                                                     finalResult.model_id = finalStruct.record[0]._doc.model[0].model_id;
