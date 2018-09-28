@@ -6,6 +6,12 @@ const ai_url = config.get('ai_URL');
 const neuralZomeUserModel = require(MODELS + 'neuralZomeUser');
 var user_details;
 var NeuralZoneData = {};
+var nodemailer = require('nodemailer');
+
+var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: config.get('node_mailer')
+});
 
 const storage = multer.diskStorage({
     filename: function (req, file, cb) {
@@ -231,55 +237,104 @@ exports.getAccuracyDetails = function (req, res, next) {
             } else {
                 var result = body.body;
                 if (result.status == 'True') {
-                    jsonStruct.result = result;
-                    neuralZomeUserModel.find({ email: result.email },
-                        { model: { $elemMatch: { model_id: result.modelId } } }, (err, record) => {
-                            if (err) {
-                                next(err)
-                            } else {
-                                if (record.length > 0) {
-                                    jsonStruct.model = record[0];
-                                    if (jsonStruct.model._doc.model[0] != undefined) {
-                                        Object.keys(jsonStruct.model._doc.model[0].algo_hyper).forEach(function (key) {
-                                            if (key.indexOf(jsonStruct.result.algo) != -1) {
-                                                var hyper_value = jsonStruct.model._doc.model[0].algo_hyper[key];
-                                                Object.keys(hyper_value).map(function (key, index) {
-                                                    hyper_value[key].accuracy = jsonStruct.result.accuracy[key];
-                                                });
-                                                jsonStruct.hyper_accuracy = hyper_value;
-                                            }
-                                        });
-                                        neuralZomeUserModel.findOneAndUpdate({
-                                            email: jsonStruct.result.email,
-                                            "model.model_id": jsonStruct.result.modelId
-                                        }, {
-                                                'model.$.algo_hyper': jsonStruct.model._doc.model[0].algo_hyper
-                                            }, { multi: true }, function (err, record) {
-                                                if (err) {
-                                                    next(err);
-                                                } else {
-                                                    var finalResult = {};
-                                                    finalResult.email = record.email;
-                                                    finalResult.algo = jsonStruct.result.algo;
-                                                    finalResult.prediction_type = jsonStruct.result.prediction_type;
-                                                    finalResult.tt_split = record.tt_split;
-                                                    finalResult.file_path = jsonStruct.model._doc.model[0].filepath;
-                                                    finalResult.model_id = jsonStruct.model._doc.model[0].model_id;
-                                                    finalResult.algo_hyper = jsonStruct.hyper_accuracy;
-                                                    finalResult.x_list = jsonStruct.bodyDetails.x_list;
-                                                    finalResult.y_list = jsonStruct.bodyDetails.y_list;
-                                                    res.sendResponse(finalResult, 'fetching accuracy successfully.');
+                    if (result.prediction_type == "auto") {
+                        jsonStruct.result = result;
+                        neuralZomeUserModel.findOneAndUpdate({
+                            email: result.email,
+                            "model.model_id": result.modelId
+                        }, {
+                                $inc: { total_model_count: 1, 'model.$.model_count': 1 },
+                                'model.$.accuracy': result.accuracy,
+                                'model.$.train_split': result.train_split,
+                                'model.$.test_split': result.test_split,
+                                'model.$.model_file_path': result.model_file_path,
+                                'model.$.pkl_file_path': result.pklfile,
+                                'model.$.hint': result.hint,
+                                'model.$.steps': 2
+                            }, { multi: true }, function (err, record) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    const mailOptions = {
+                                        from: 'support@neuralzome.com', // sender address
+                                        to: result.email, // list of receivers
+                                        subject: 'Greetings from Neuralzome', // Subject line
+                                        html: '<p>Hi,</p>' +
+                                            '<p>Thanks for using Neuralzome! Please use below link with given email address</p>' +
+                                            '<p>and modelId to make predictions.</p>' +
+                                            '<p>email: ' + result.email + '</p>' +
+                                            '<p>modelId: ' + result.modelId + '</p>' +
+                                            '<p>' + 'http://neuralzome.com/api' + '</p>' +
+                                            '<p>if any issues and need help contact' + ' mohan@gamasome.com' + '</p>' +
+                                            '<br>' + '<br>' + '<p>Regards,</p>' + '<p>The Gamasome Interactive LLP</p>'
+                                    };
+
+                                    transporter.sendMail(mailOptions, function (err, info) {
+                                        if (err) {
+                                            console.log(err);
+                                            next(err);
+                                        } else {
+                                            console.log('email sent successfully', info);
+                                        }
+                                    });
+
+                                    // send mail to email
+                                    result.info = true;
+                                    res.sendResponse(jsonStruct.result, 'Preprocessing successfully.');
+                                }
+                            });
+                    } else if (result.prediction_type == "custom") {
+                        jsonStruct.result = result;
+                        neuralZomeUserModel.find({ email: result.email },
+                            { model: { $elemMatch: { model_id: result.modelId } } }, (err, record) => {
+                                if (err) {
+                                    next(err)
+                                } else {
+                                    if (record.length > 0) {
+                                        jsonStruct.model = record[0];
+                                        if (jsonStruct.model._doc.model[0] != undefined) {
+                                            Object.keys(jsonStruct.model._doc.model[0].algo_hyper).forEach(function (key) {
+                                                if (key.indexOf(jsonStruct.result.algo) != -1) {
+                                                    var hyper_value = jsonStruct.model._doc.model[0].algo_hyper[key];
+                                                    Object.keys(hyper_value).map(function (key, index) {
+                                                        hyper_value[key].accuracy = jsonStruct.result.accuracy[key];
+                                                    });
+                                                    jsonStruct.hyper_accuracy = hyper_value;
                                                 }
                                             });
+                                            neuralZomeUserModel.findOneAndUpdate({
+                                                email: jsonStruct.result.email,
+                                                "model.model_id": jsonStruct.result.modelId
+                                            }, {
+                                                    'model.$.algo_hyper': jsonStruct.model._doc.model[0].algo_hyper
+                                                }, { multi: true }, function (err, record) {
+                                                    if (err) {
+                                                        next(err);
+                                                    } else {
+                                                        var finalResult = {};
+                                                        finalResult.email = record.email;
+                                                        finalResult.algo = jsonStruct.result.algo;
+                                                        finalResult.prediction_type = jsonStruct.result.prediction_type;
+                                                        finalResult.tt_split = record.tt_split;
+                                                        finalResult.file_path = jsonStruct.model._doc.model[0].filepath;
+                                                        finalResult.file_extension = jsonStruct.model._doc.model[0].file_extension;
+                                                        finalResult.model_id = jsonStruct.model._doc.model[0].model_id;
+                                                        finalResult.algo_hyper = jsonStruct.hyper_accuracy;
+                                                        finalResult.x_list = jsonStruct.bodyDetails.x_list;
+                                                        finalResult.y_list = jsonStruct.bodyDetails.y_list;
+                                                        res.sendResponse(finalResult, 'fetching accuracy successfully.');
+                                                    }
+                                                });
+                                        } else {
+                                            next('Invalid data');
+                                        }
+                                        var finalResult = {};
                                     } else {
                                         next('Invalid data');
                                     }
-                                    var finalResult = {};
-                                } else {
-                                    next('Invalid data');
                                 }
-                            }
-                        });
+                            });
+                    }
                 } else {
                     next(result);
                 }

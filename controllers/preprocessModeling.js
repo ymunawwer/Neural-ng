@@ -50,7 +50,6 @@ function sendPreprocessingData(bodyDetails, res, next) {
             if (err) {
                 console.log(err);
             } else {
-                console.log(record);
                 bodyDetails.tt_split = "80% train and 20% test";
                 request.post({
                     url: ai_url + 'preprocessing_modelling',
