@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }).single('file');
 
-exports.getDetailsForStep2 = function (req, res, next) {
+exports.uploadFile = function (req, res, next) {
     try {
         var file_details;
         upload(req, res, function (err) {
@@ -204,19 +204,33 @@ exports.getAccuracyDetails = function (req, res, next) {
     try {
         var jsonStruct = {};
         var bodyDetails = req.body;
-        jsonStruct.bodyDetails = bodyDetails;
-        if (bodyDetails.prediction_type == "custom") {
-            request.post({
-                url: ai_url + 'algo_select',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                json: bodyDetails
-            }, function (error, body) {
-                if (error) {
-                    next(error);
+        neuralZomeUserModel.findOneAndUpdate({
+            email: bodyDetails.email,
+            "model.model_id": bodyDetails.modelId
+        }, {
+                'model.$.algo': bodyDetails.algo,
+                'model.$.x_list': JSON.stringify(bodyDetails.x_list),
+                'model.$.y_list': JSON.stringify(bodyDetails.y_list),
+            }, { multi: true }, function (err, updatedResult) {
+                if (err) {
+                    next(err);
                 } else {
-                    var result = body.body;
+                    console.log(updatedResult);
+                }
+            });
+        jsonStruct.bodyDetails = bodyDetails;
+        request.post({
+            url: ai_url + 'algo_select',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            json: bodyDetails
+        }, function (error, body) {
+            if (error) {
+                next(error);
+            } else {
+                var result = body.body;
+                if (result.status == 'True') {
                     jsonStruct.result = result;
                     neuralZomeUserModel.find({ email: result.email },
                         { model: { $elemMatch: { model_id: result.modelId } } }, (err, record) => {
@@ -252,7 +266,9 @@ exports.getAccuracyDetails = function (req, res, next) {
                                                     finalResult.file_path = jsonStruct.model._doc.model[0].filepath;
                                                     finalResult.model_id = jsonStruct.model._doc.model[0].model_id;
                                                     finalResult.algo_hyper = jsonStruct.hyper_accuracy;
-                                                    res.sendResponse(finalResult, 'Preprocessing successfully.');
+                                                    finalResult.x_list = jsonStruct.bodyDetails.x_list;
+                                                    finalResult.y_list = jsonStruct.bodyDetails.y_list;
+                                                    res.sendResponse(finalResult, 'fetching accuracy successfully.');
                                                 }
                                             });
                                     } else {
@@ -264,9 +280,11 @@ exports.getAccuracyDetails = function (req, res, next) {
                                 }
                             }
                         });
+                } else {
+                    next(result);
                 }
-            });
-        }
+            }
+        });
     } catch (ex) {
         return ex;
     }

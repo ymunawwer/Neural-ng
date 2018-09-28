@@ -11,7 +11,7 @@ var transporter = nodemailer.createTransport({
     auth: config.get('node_mailer')
 });
 
-exports.getDetailsForStep3 = function (req, res, next) {
+exports.preprocessing_modelling = function (req, res, next) {
     try {
         var bodyDetails = req.body;
         neuralZomeUserModel.find({ email: req.body.email, "model.model_id": req.body.modelId }, (err, record) => {
@@ -51,6 +51,7 @@ function sendPreprocessingData(bodyDetails, res, next) {
                 console.log(err);
             } else {
                 console.log(record);
+                bodyDetails.tt_split = "80% train and 20% test";
                 request.post({
                     url: ai_url + 'preprocessing_modelling',
                     headers: {
@@ -118,7 +119,7 @@ function sendPreprocessingData(bodyDetails, res, next) {
         });
 }
 
-exports.getDetailsForStep4 = function (req, res, next) {
+exports.getPredictResult = function (req, res, next) {
     try {
         var bodyDetails = req.body;
         neuralZomeUserModel.find({ email: req.body.email, "model.model_id": req.body.modelId }, (err, record) => {
@@ -229,22 +230,52 @@ exports.evaluateAccuracy = function (req, res, next) {
                 next(error);
             } else {
                 var result = body.body;
-                var finalStruct = {};
-                finalStruct.result = result;
-                if (result.status == true) {
-                    res.sendResponse(result, 'Accuracy evaluated  successfully.');
-                    // neuralZomeUserModel.findOneAndUpdate({
-                    //     email: result.email,
-                    //     "model.model_id": result.modelId
-                    // }, {
-                    //         'model.$.accuracy': result.accuracy
-                    //     }, { multi: true }, function (err, record) {
-                    //         if (err) {
-                    //             next(err);
-                    //         } else {
-                    //             res.sendResponse(finalStruct.result, 'Accuracy evaluated  successfully.');
-                    //         }
-                    //     });
+                if (result.status == 'True') {
+                    var finalStruct = {};
+                    finalStruct.result = result;
+                    neuralZomeUserModel.find({ email: result.email },
+                        { model: { $elemMatch: { model_id: result.modelId } } }, (err, record) => {
+                            if (err) {
+                                next(err)
+                            } else {
+                                finalStruct.record = record;
+                                if (record.length > 0) {
+                                    if (record[0]._doc.model[0] != undefined) {
+                                        Object.keys(record[0]._doc.model[0].algo_hyper).forEach(function (key) {
+                                            if (key.indexOf(finalStruct.result.algo) != -1) {
+                                                var hyper_value = record[0]._doc.model[0].algo_hyper[key];
+                                                Object.keys(hyper_value).map(function (key, index) {
+                                                    hyper_value[key].accuracy = finalStruct.result.accuracy[key] != undefined ? finalStruct.result.accuracy[key] : hyper_value[key].accuracy;
+                                                });
+                                                finalStruct.hyper_accuracy = record[0]._doc.model[0].algo_hyper;
+                                            }
+                                        });
+                                        neuralZomeUserModel.findOneAndUpdate({
+                                            email: finalStruct.result.email,
+                                            "model.model_id": finalStruct.result.modelId
+                                        }, {
+                                                'model.$.algo_hyper': finalStruct.hyper_accuracy
+                                            }, { multi: true }, function (err, record) {
+                                                if (err) {
+                                                    next(err);
+                                                } else {
+                                                    var finalResult = {};
+                                                    finalResult.email = finalStruct.result.email;
+                                                    finalResult.algo_hyper = finalStruct.hyper_accuracy;
+                                                    finalResult.tt_split = finalStruct.record[0].tt_split;
+                                                    finalResult.file_path = finalStruct.record[0]._doc.model[0].filepath;
+                                                    finalResult.model_id = finalStruct.record[0]._doc.model[0].model_id;
+                                                    res.sendResponse(finalResult, 'Accuracy evaluated  successfully..');
+                                                }
+                                            });
+                                    } else {
+                                        next('Invalid model');
+                                    }
+                                } else {
+                                    next('Invalid data');
+                                }
+                            }
+                        });
                 } else {
                     next(result);
                 }
