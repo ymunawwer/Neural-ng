@@ -1,5 +1,7 @@
 {
   "databaseName": "mongodb://18.223.247.58:27017/NeuralZome",
+  "neural_zome_dev": "http://18.223.247.58/",
+  "neural_zome_prod": "http://neuralzome.com",
   "ai_URL": "http://18.223.247.58:5000/",
   "free_version": {
     "total_model_count": 50,

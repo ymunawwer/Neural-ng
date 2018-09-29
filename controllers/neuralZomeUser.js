@@ -264,7 +264,7 @@ exports.getAccuracyDetails = function (req, res, next) {
                                             '<p>and modelId to make predictions.</p>' +
                                             '<p>email: ' + result.email + '</p>' +
                                             '<p>modelId: ' + result.modelId + '</p>' +
-                                            '<p>' + 'http://neuralzome.com/api' + '</p>' +
+                                            '<p>' + config.get('neural_zome_dev') + 'api' + '</p>' +
                                             '<p>if any issues and need help contact' + ' mohan@gamasome.com' + '</p>' +
                                             '<br>' + '<br>' + '<p>Regards,</p>' + '<p>The Gamasome Interactive LLP</p>'
                                     };
@@ -310,7 +310,7 @@ exports.getAccuracyDetails = function (req, res, next) {
                                                 '<p>and modelId to make predictions.</p>' +
                                                 '<p>email: ' + result.email + '</p>' +
                                                 '<p>modelId: ' + result.modelId + '</p>' +
-                                                '<p>' + 'http://neuralzome.com/api' + '</p>' +
+                                                '<p>' + config.get('neural_zome_dev') + 'api' + '</p>' +
                                                 '<p>if any issues and need help contact' + ' mohan@gamasome.com' + '</p>' +
                                                 '<br>' + '<br>' + '<p>Regards,</p>' + '<p>The Gamasome Interactive LLP</p>'
                                         };
