@@ -11,6 +11,9 @@ router.post('/getPredictResult', preprocessModelingController.getPredictResult);
 router.post('/getDetailsForPredict', neuralzomeUserController.getDetailsForPredict);
 router.post('/contactus', preprocessModelingController.contactus);
 router.post('/algo_select', neuralzomeUserController.getAccuracyDetails);
+
+router.post('/savedata', neuralzomeUserController.saveDetails);
+
 router.post('/evaluate', preprocessModelingController.evaluateAccuracy);
 
 
